@@ -20,5 +20,24 @@ Elke map bevat een `index.html`, `style.css`, `script.js`, en een `models/` subm
 Om dit project te gebruiken, clone de repository naar je lokale machine:
 
 ```bash
-git clone https://github.com/jouwgebruikersnaam/mediapipe-project.git
+git clone https://github.com/SuusjeVG/mediapipe-tracking.git
 cd mediapipe-project
+```
+
+## Gebruik
+
+Om het project te starten, open je de index.html bestanden in een van de mappen afhankelijk van het gewenste tracking onderdeel. Zorg ervoor dat je een lokale server draait vanwege de browserbeveiliging gerelateerd aan het laden van modellen.
+
+## Licentie
+
+Dit project is gelicenseerd onder de MIT License - zie de LICENSE file voor details.
+
+## Specifieke Documentatie
+Voor gedetailleerde informatie over elk onderdeel, bezoek de volgende links:
+
+- [Face Detection Documentation](./face/README.md)
+- [Hand Pose Detection Documentation](./hands/README.md)
+- [Pose Estimation Documentation](./pose/README.md)
+- [Holistic Detection Documentation](./holistic/README.md)
+
+We hopen dat dit project nuttig zal zijn voor je onderzoek en ontwikkeling in motion tracking technologieën. Veel succes!
