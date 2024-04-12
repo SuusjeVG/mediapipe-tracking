@@ -45,3 +45,7 @@ Voor gedetailleerde informatie over elk onderdeel, bezoek de volgende links:
 - [Holistic Detection Documentation](./holistic/holistic.md)
 
 We hopen dat dit project nuttig zal zijn voor je onderzoek en ontwikkeling in motion tracking technologieën. Veel succes!
+
+## bron
+
+*Bron: [MediaPipe](https://developers.google.com/mediapipe/solutions/guide)*
