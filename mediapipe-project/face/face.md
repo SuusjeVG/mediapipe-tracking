@@ -21,6 +21,12 @@ MediaPipe Face Mesh schat in real-time 468 3D-gezichtslandmarken, zelfs op mobie
 ```html
 <button id="webcamButton">Enable webcam</button>
 ```
+- Blend shapes element:
+```html
+<div class="blend-shapes">
+  <ul class="blend-shapes-list" id="video-blend-shapes"></ul>
+</div>
+```
 
 ## Scripts (javascript)
 
