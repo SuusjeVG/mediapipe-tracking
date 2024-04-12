@@ -73,7 +73,9 @@ function onResults(results) {
                  {color: '#00CC00', lineWidth: 5});
   drawLandmarks(canvasCtx, results.rightHandLandmarks,
                 {color: '#FF0000', lineWidth: 2});
+
   canvasCtx.restore();
+
 }
 ```
 
@@ -156,6 +158,8 @@ Het uitvoersegmentatiemasker, voorspeld alleen wanneer [enable_segmentation](#en
 
 ### Webcam Activeren en Landmarks Detecteren
 
+De camerafunctionaliteit wordt beheerd door de Camera klasse, die onderdeel is van de MediaPipe utilities geïmporteerd via de CDN in het HTML-document. De Camera klasse regelt het vastleggen van frames van de video-element, die vervolgens worden doorgestuurd naar de Holistic model voor verwerking.
+
 ```javascript
 const camera = new Camera(videoElement, {
   onFrame: async () => {
@@ -166,6 +170,15 @@ const camera = new Camera(videoElement, {
 });
 camera.start();
 ```
+
+## Documentatie
+
+Voor meer gedetailleerde informatie over MediaPipe Holistic en de configuratieopties, bezoek de [officiële MediaPipe Holistic documentatie](https://developers.google.com/mediapipe/solutions/vision/holistic_landmarker).
+
+## Verdere Referenties
+
+- [MediaPipe Solutions](https://github.com/google/mediapipe/blob/master/docs/solutions/holistic.md)
+- [MediaPipe op GitHub](https://github.com/google/mediapipe)
 
 
 

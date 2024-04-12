@@ -196,3 +196,12 @@ Console.log de `landmarks` variable `console.log(landmarks)` in de for of loop d
 
 - Animatie Loop: De `window.requestAnimationFrame` roept predictWebcam opnieuw aan zolang de webcam actief is, waardoor een continue stroom van frames wordt verwerkt voor real-time tracking.
 Deze functie zal nu effectief de gezichtslandmarken in real-time op het canvas visualiseren, gebruikmakend van de videofeed van de webcam.
+
+## Documentatie
+
+Voor meer gedetailleerde informatie over MediaPipe Pose landmarker en de configuratieopties, bezoek de [officiële MediaPipe Pose landmarker documentatie](https://developers.google.com/mediapipe/solutions/vision/pose_landmarker/web_js).
+
+## Verdere Referenties
+
+- [MediaPipe Solutions](https://github.com/google/mediapipe/blob/master/docs/solutions/pose.md)
+- [MediaPipe op GitHub](https://github.com/google/mediapipe)
