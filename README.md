@@ -28,6 +28,8 @@ cd mediapipe-project
 
 Om het project te starten, open je de index.html bestanden in een van de mappen afhankelijk van het gewenste tracking onderdeel. Zorg ervoor dat je een lokale server draait vanwege de browserbeveiliging gerelateerd aan het laden van modellen.
 
+Kies een van de trackingsbestanden uit die je wilt gebruiken. De rest van de mapjes kun je dan allemaal verwijderen.
+
 ## Licentie
 
 Dit project is gelicenseerd onder de MIT License - zie de LICENSE file voor details.
