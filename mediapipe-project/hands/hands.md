@@ -42,7 +42,7 @@ import {
 } from "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.0";
 ```
 
-### Initialisatie van Face Landmarker
+### Initialisatie van Hands Landmarker
 
 ```javascript
 const createHandLandmarker = async () => {

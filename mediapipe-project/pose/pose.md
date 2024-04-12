@@ -44,7 +44,7 @@ import {
 } from "https://cdn.skypack.dev/@mediapipe/tasks-vision@0.10.0";
 ```
 
-### Initialisatie van Face Landmarker
+### Initialisatie van Pose Landmarker
 
 ```javascript
 const createPoseLandmarker = async () => {
