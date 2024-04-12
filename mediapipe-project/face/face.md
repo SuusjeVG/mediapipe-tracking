@@ -32,6 +32,11 @@ De code begint met het importeren van de `vision` bibliotheek van de CDN. Hierui
 - `FilesetResolver`: Voor het laden van de benodigde bestanden.
 - `DrawingUtils`: Voor het tekenen van resultaten op het canvas.
 
+```javascript
+import vision from "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.3";
+const { FaceLandmarker, FilesetResolver, DrawingUtils } = vision;
+```
+
 ### Initialisatie van Face Landmarker
 
 ```javascript
