@@ -36,7 +36,7 @@ Dit project is gelicenseerd onder de MIT License - zie de LICENSE file voor deta
 Voor gedetailleerde informatie over elk onderdeel, bezoek de volgende links:
 
 - [Face Detection Documentation](./face/face.md)
-- [Hand Pose Detection Documentation](./hands/hand.md)
+- [Hand Pose Detection Documentation](./hands/hands.md)
 - [Pose Estimation Documentation](./pose/pose.md)
 - [Holistic Detection Documentation](./holistic/holistic.md)
 
