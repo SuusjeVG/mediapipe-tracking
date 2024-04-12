@@ -213,7 +213,7 @@ Deze functie zal nu effectief de gezichtslandmarken in real-time op het canvas v
 
 ## Documentatie
 
-Voor meer gedetailleerde informatie over MediaPipe Pose landmarker en de configuratieopties, bezoek de [officiële MediaPipe Pose landmarker documentatie](https://developers.google.com/mediapipe/solutions/vision/face_landmarker/web_js).
+Voor meer gedetailleerde informatie over MediaPipe Face landmarker en de configuratieopties, bezoek de [officiële MediaPipe Face landmarker documentatie](https://developers.google.com/mediapipe/solutions/vision/face_landmarker/web_js).
 
 ## Verdere Referenties
 
