@@ -35,9 +35,9 @@ Dit project is gelicenseerd onder de MIT License - zie de LICENSE file voor deta
 ## Specifieke Documentatie
 Voor gedetailleerde informatie over elk onderdeel, bezoek de volgende links:
 
-- [Face Detection Documentation](./face/README.md)
-- [Hand Pose Detection Documentation](./hands/README.md)
-- [Pose Estimation Documentation](./pose/README.md)
-- [Holistic Detection Documentation](./holistic/README.md)
+- [Face Detection Documentation](./face/face.md)
+- [Hand Pose Detection Documentation](./hands/hand.md)
+- [Pose Estimation Documentation](./pose/pose.md)
+- [Holistic Detection Documentation](./holistic/holistic.md)
 
 We hopen dat dit project nuttig zal zijn voor je onderzoek en ontwikkeling in motion tracking technologieën. Veel succes!
