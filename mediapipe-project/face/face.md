@@ -1,3 +1,29 @@
+# Overzicht
+
+MediaPipe Face Mesh schat in real-time 468 3D-gezichtslandmarken, zelfs op mobiele apparaten. Het maakt gebruik van machine learning (ML) om het 3D-oppervlak van het gezicht te berekenen met enkel een enkele camera, zonder dat een speciale dieptesensor nodig is. Door lichtgewicht modelarchitecturen te combineren met GPU-versnelling, levert het real-time prestaties die essentieel zijn voor live-ervaringen.
+
+![face_mesh_ar_effects.gif](https://mediapipe.dev/images/face_mesh_ar_effects.gif) |
+
+
+## Belangrijke Elementen in het HTML-document
+
+- Video element:
+```html
+<video id="webcam" playsinline autoplay></video>
+```
+
+- Canvas element:
+```html
+<canvas id="output_canvas" width="1280px" height="720px"></canvas>
+```
+
+- Button element:
+```html
+<button id="webcamButton">Enable webcam</button>
+```
+
+## Scripts (javascript)
+
 ### Imports
 
 De code begint met het importeren van de `vision` bibliotheek van de CDN. Hieruit worden specifieke klassen geëxtraheerd die nodig zijn voor het project:
@@ -43,3 +69,139 @@ This task has the following configuration options:
 | `output_facial_transformation_matrixes` | Whether FaceLandmarker outputs the facial transformation matrix, used to transform face landmarks from a canonical face model to the detected face.                           | Boolean                | False         |
 | `result_callback`                    | Sets the result listener to receive the landmarker results asynchronously when FaceLandmarker is in the live stream mode. Only used when running mode is set to LIVE_STREAM.   | ResultListener         | N/A           |
 
+### Configuratie van de Webcam en Canvas
+
+```javascript
+const video = document.getElementById("webcam");
+const canvasElement = document.getElementById("output_canvas");
+const canvasCtx = canvasElement.getContext("2d");
+
+function hasGetUserMedia() {
+  return !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia);
+}
+
+if (hasGetUserMedia()) {
+  enableWebcamButton = document.getElementById("webcamButton");
+  enableWebcamButton.addEventListener("click", enableCam);
+} else {
+  console.warn("getUserMedia() is not supported by your browser");
+}
+```
+
+Dit deel van de code zorgt voor het instellen van de video- en canvas-elementen. Het controleert of de browser ondersteuning biedt voor getUserMedia voor toegang tot de webcam. Als dit ondersteund wordt, wordt een event listener toegevoegd aan de knop om de webcam in te schakelen.
+
+
+### Webcam Activeren en Landmarks Detecteren
+
+```javascript
+function enableCam(event) {
+  if (!faceLandmarker) {
+    console.log("Wait! faceLandmarker not loaded yet.");
+    return;
+  }
+
+  if (webcamRunning === true) {
+    webcamRunning = false;
+    enableWebcamButton.innerText = "ENABLE PREDICTIONS";
+  } else {
+    webcamRunning = true;
+    enableWebcamButton.innerText = "DISABLE PREDICTIONS";
+  }
+
+  const constraints = {
+    video: true
+  };
+
+  navigator.mediaDevices.getUserMedia(constraints).then((stream) => {
+    video.srcObject = stream;
+    video.addEventListener("loadeddata", predictWebcam);
+  });
+}
+```
+
+Wanneer de gebruiker de webcam inschakelt, wordt gecontroleerd of de FaceLandmarker is geladen. Vervolgens wordt de webcamstream geactiveerd en klaargezet om voorspellingen te doen met behulp van de predictWebcam functie.
+
+
+### Voorspelling en Rendering
+
+```javascript
+async function predictWebcam() {
+  // Calculate the aspect ratio of the video
+  const ratio = video.videoHeight / video.videoWidth;
+  video.style.width = "100%";
+  video.style.height = videoWidth * ratio + "px";
+  canvasElement.style.width = "100%";
+  canvasElement.style.height = videoWidth * ratio + "px";
+  canvasElement.width = video.videoWidth;
+  canvasElement.height = video.videoHeight;
+
+  // Get the current time of the video in milliseconds
+  let startTimeMs = performance.now();
+  if (lastVideoTime !== video.currentTime) {
+    lastVideoTime = video.currentTime;
+    // Detect face landmarks in the current frame
+    results = await faceLandmarker.detectForVideo(video, startTimeMs);
+  }
+
+  // Check if there are face landmarks in the results and draw them
+  if (results && results.faceLandmarks) {
+    // Clear the canvas and draw the current frame from the video
+    canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);
+    canvasCtx.drawImage(video, 0, 0, canvasElement.width, canvasElement.height);
+    
+    // Iterate through each detected face landmarks and draw them
+    results.faceLandmarks.forEach(landmarks => {
+      drawingUtils.drawConnectors(
+        canvasCtx, landmarks, FaceLandmarker.FACE_LANDMARKS_TESSELATION,
+        { color: "#C0C0C070", lineWidth: 1 }
+      );
+      drawingUtils.drawConnectors(
+        canvasCtx, landmarks, FaceLandmarker.FACE_LANDMARKS_RIGHT_EYE,
+        { color: "#FF3030" }
+      );
+      drawingUtils.drawConnectors(
+        canvasCtx, landmarks, FaceLandmarker.FACE_LANDMARKS_RIGHT_EYEBROW,
+        { color: "#FF3030" }
+      );
+      drawingUtils.drawConnectors(
+        canvasCtx, landmarks, FaceLandmarker.FACE_LANDMARKS_LEFT_EYE,
+        { color: "#30FF30" }
+      );
+      drawingUtils.drawConnectors(
+        canvasCtx, landmarks, FaceLandmarker.FACE_LANDMARKS_LEFT_EYEBROW,
+        { color: "#30FF30" }
+      );
+      drawingUtils.drawConnectors(
+        canvasCtx, landmarks, FaceLandmarker.FACE_LANDMARKS_FACE_OVAL,
+        { color: "#E0E0E0" }
+      );
+      drawingUtils.drawConnectors(
+        canvasCtx, landmarks, FaceLandmarker.FACE_LANDMARKS_LIPS,
+        { color: "#E0E0E0" }
+      );
+      drawingUtils.drawConnectors(
+        canvasCtx, landmarks, FaceLandmarker.FACE_LANDMARKS_RIGHT_IRIS,
+        { color: "#FF3030" }
+      );
+      drawingUtils.drawConnectors(
+        canvasCtx, landmarks, FaceLandmarker.FACE_LANDMARKS_LEFT_IRIS,
+        { color: "#30FF30" }
+      );
+    });
+  }
+
+  // Continue predicting by requesting another animation frame
+  if (webcamRunning === true) {
+    window.requestAnimationFrame(predictWebcam);
+  }
+}
+```
+
+#### Belangrijke punten:
+
+- Aspect Ratio Correctie: De code berekent de aspectratio van de video en past de hoogte van het videovenster aan om vervorming te voorkomen.
+
+- Landmark Detection en Drawing: De functie detecteert gezichtslandmarken en tekent ze op het canvas. Elk type landmark wordt met een specifieke kleur en lijndikte getekend voor duidelijke visualisatie.
+
+- Animatie Loop: De `window.requestAnimationFrame` roept predictWebcam opnieuw aan zolang de webcam actief is, waardoor een continue stroom van frames wordt verwerkt voor real-time tracking.
+Deze functie zal nu effectief de gezichtslandmarken in real-time op het canvas visualiseren, gebruikmakend van de videofeed van de webcam.
