@@ -1,5 +1,7 @@
 # MediaPipe Motion Tracking Project
 
+![MediaPipe](https://developers.google.com/static/mediapipe/images/home/hero_01_1920.png)
+
 ## Overzicht
 
 Dit project gebruikt MediaPipe, een geavanceerd framework ontwikkeld door Google, om diverse motion tracking technologieën te implementeren. Het project is opgedeeld in vier belangrijke onderdelen: Face Tracking, Hand Pose, Pose Estimation en Holistic Detection, die elk gebruik maken van de webcam technologie voor real-time detectie en analyse.
