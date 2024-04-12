@@ -109,11 +109,3 @@ async function predictWebcam() {
   }
 }
 
-// In faceTracking.js, handTracking.js, en bodyTracking.js
-export function stopTracking() {
-    if (webcamStream) {
-        webcamStream.getTracks().forEach(track => track.stop());
-    }
-    window.cancelAnimationFrame(animationFrameRequest);
-    // Andere opruimacties specifiek voor deze tracking
-}

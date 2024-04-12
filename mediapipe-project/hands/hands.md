@@ -186,11 +186,11 @@ async function predictWebcam() {
 
 ### Results
 
-Console.log de `landmarks` variable [`console.log(landmarks)`] in de for of loop dan krijg je de 20 specifieke object landmarks in een array. Hiermee kun je een specifieke landmark targeten. Wil je weten welke index welke landmark is? Kijk dan naar de afbeelding hieronder:
+Console.log de `landmarks` variable `console.log(landmarks)` in de for of loop dan krijg je de 21 specifieke object landmarks gelogged in de console in een array. Hiermee kun je een specifieke landmark targeten. Wil je weten welke index welke landmark is? Kijk dan naar de afbeelding hieronder:
 
 ![hand_landmarks.png](https://mediapipe.dev/images/mobile/hand_landmarks.png) |
 :--------------------------------------------------------: |
-*Fig 2. 21 hand landmarks.*            
+*Fig 1. 21 hand landmarks.*            
 
 #### Belangrijke punten:
 
