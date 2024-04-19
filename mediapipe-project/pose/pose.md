@@ -52,6 +52,10 @@ import {
   FilesetResolver,
   DrawingUtils
 } from "https://cdn.skypack.dev/@mediapipe/tasks-vision@0.10.0";
+
+let poseLandmarker= undefined;
+let enableWebcamButton;
+let webcamRunning= false;
 ```
 
 ### Initialisatie van Pose Landmarker
@@ -74,6 +78,8 @@ const createPoseLandmarker = async () => {
 
 };
 createPoseLandmarker();
+
+- **Model File Location and Naming:** Het getrainde model dat gespecificeerd wordt in de modelAssetPath bevindt zich in de `models/` map van je project. De bestandsnaam van het model moet het patroon `specifieke-tracking.task` volgen. Zorg ervoor dat je het juiste bestand in deze map plaatst en de juiste bestandsnaam in je configuratie gebruikt. Bijvoorbeeld, als je een pose-tracking model gebruikt, kan het bestand genaamd zijn als `pose_landmarker.task` en zou je `modelAssetPath: './models/pose_landmarker.task'` instellen.
 ```
 
 Dit script initialiseert de pose Landmarker door eerst de FilesetResolver te configureren die nodig is om de machine learning modellen te laden. De pose Landmarker wordt aangemaakt met configuraties zoals het pad naar het model en het gebruik van GPU voor snellere verwerking.

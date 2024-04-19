@@ -7,7 +7,6 @@ const videoBlendShapes = document.getElementById("video-blend-shapes");
 let faceLandmarker;
 let enableWebcamButton;
 let webcamRunning = false;
-let videoWidth;
 
 // Before we can use HandLandmarker class we must wait for it to finish
 // loading. Machine Learning models can be large and take a moment to
