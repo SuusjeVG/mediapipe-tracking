@@ -79,11 +79,11 @@ const createHandLandmarker = async () => {
 
 };
 createHandLandmarker();
-
-- **Model File Location and Naming:** Het getrainde model dat gespecificeerd wordt in de modelAssetPath bevindt zich in de `models/` map van je project. De bestandsnaam van het model moet het patroon `specifieke-tracking.task` volgen. Zorg ervoor dat je het juiste bestand in deze map plaatst en de juiste bestandsnaam in je configuratie gebruikt. Bijvoorbeeld, als je een hand-tracking model gebruikt, kan het bestand genaamd zijn als `hand_landmarker.task` en zou je `modelAssetPath: './models/hand_landmarker.task'` instellen.
 ```
 
 Dit script initialiseert de handen Landmarker door eerst de FilesetResolver te configureren die nodig is om de machine learning modellen te laden. De handen Landmarker wordt aangemaakt met configuraties zoals het pad naar het model, het gebruik van GPU voor snellere verwerking, en het aantal te detecteren handen.
+
+- **Model File Location and Naming:** Het getrainde model dat gespecificeerd wordt in de modelAssetPath bevindt zich in de `models/` map van je project. De bestandsnaam van het model moet het patroon `specifieke-tracking.task` volgen. Zorg ervoor dat je het juiste bestand in deze map plaatst en de juiste bestandsnaam in je configuratie gebruikt. Bijvoorbeeld, als je een hand-tracking model gebruikt, kan het bestand genaamd zijn als `hand_landmarker.task` en zou je `modelAssetPath: './models/hand_landmarker.task'` instellen.
 
 ## Configuratieopties
 
