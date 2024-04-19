@@ -2,7 +2,7 @@
 import vision from "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.3";
 const { FaceLandmarker, FilesetResolver, DrawingUtils } = vision;
 
-const videoBlendShapes = document.getElementById("video-blend-shapes");
+// const videoBlendShapes = document.getElementById("video-blend-shapes");
 
 let faceLandmarker;
 let enableWebcamButton;
@@ -160,26 +160,26 @@ async function predictWebcam() {
   }
 }
 
-function drawBlendShapes(el, blendShapes) {
-  if (!blendShapes.length) {
-    return;
-  }
+// function drawBlendShapes(el, blendShapes) {
+//   if (!blendShapes.length) {
+//     return;
+//   }
 
-  console.log(blendShapes[0]);
+//   console.log(blendShapes[0]);
   
-  let htmlMaker = "";
-  blendShapes[0].categories.map((shape) => {
-    htmlMaker += `
-      <li class="blend-shapes-item">
-        <span class="blend-shapes-label">${
-          shape.displayName || shape.categoryName
-        }</span>
-        <span class="blend-shapes-value" style="width: calc(${
-          +shape.score * 100
-        }% - 120px)">${(+shape.score).toFixed(4)}</span>
-      </li>
-    `;
-  });
+//   let htmlMaker = "";
+//   blendShapes[0].categories.map((shape) => {
+//     htmlMaker += `
+//       <li class="blend-shapes-item">
+//         <span class="blend-shapes-label">${
+//           shape.displayName || shape.categoryName
+//         }</span>
+//         <span class="blend-shapes-value" style="width: calc(${
+//           +shape.score * 100
+//         }% - 120px)">${(+shape.score).toFixed(4)}</span>
+//       </li>
+//     `;
+//   });
 
-  el.innerHTML = htmlMaker;
-}
+//   el.innerHTML = htmlMaker;
+// }

@@ -32,9 +32,9 @@ MediaPipe Face Mesh schat in real-time 468 3D-gezichtslandmarken, zelfs op mobie
 ```
 - Blend shapes element:
 ```html
-<div class="blend-shapes">
+<!-- <div class="blend-shapes">
   <ul class="blend-shapes-list" id="video-blend-shapes"></ul>
-</div>
+</div> -->
 ```
 `</body>`
 
@@ -52,7 +52,7 @@ De code begint met het importeren van de `vision` bibliotheek van de CDN. Hierui
 import vision from "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.3";
 const { FaceLandmarker, FilesetResolver, DrawingUtils } = vision;
 
-const videoBlendShapes = document.getElementById("video-blend-shapes");
+// const videoBlendShapes = document.getElementById("video-blend-shapes");
 
 let faceLandmarker;
 let enableWebcamButton;
@@ -248,33 +248,33 @@ async function predictWebcam() {
 - Animatie Loop: De `window.requestAnimationFrame` roept predictWebcam opnieuw aan zolang de webcam actief is, waardoor een continue stroom van frames wordt verwerkt voor real-time tracking.
 Deze functie zal nu effectief de gezichtslandmarken in real-time op het canvas visualiseren, gebruikmakend van de videofeed van de webcam.
 
-### Blend shapes
+### Blend shapes (extra)
 De functie drawBlendShapes in de gegeven JavaScript code is bedoeld om een visuele weergave van 'blend shapes' te genereren, die meestal gebruikt worden om gezichtsuitdrukkingen en emoties in digitale karakters te modelleren. Hier is een korte uitleg van wat er in deze functie gebeurt:
 
 ```javascript
-function drawBlendShapes(el, blendShapes) {
-  if (!blendShapes.length) {
-    return;
-  }
+// function drawBlendShapes(el, blendShapes) {
+//   if (!blendShapes.length) {
+//     return;
+//   }
 
-  console.log(blendShapes[0]);
+//   console.log(blendShapes[0]);
   
-  let htmlMaker = "";
-  blendShapes[0].categories.map((shape) => {
-    htmlMaker += `
-      <li class="blend-shapes-item">
-        <span class="blend-shapes-label">${
-          shape.displayName || shape.categoryName
-        }</span>
-        <span class="blend-shapes-value" style="width: calc(${
-          +shape.score * 100
-        }% - 120px)">${(+shape.score).toFixed(4)}</span>
-      </li>
-    `;
-  });
+//   let htmlMaker = "";
+//   blendShapes[0].categories.map((shape) => {
+//     htmlMaker += `
+//       <li class="blend-shapes-item">
+//         <span class="blend-shapes-label">${
+//           shape.displayName || shape.categoryName
+//         }</span>
+//         <span class="blend-shapes-value" style="width: calc(${
+//           +shape.score * 100
+//         }% - 120px)">${(+shape.score).toFixed(4)}</span>
+//       </li>
+//     `;
+//   });
 
-  el.innerHTML = htmlMaker;
-}
+//   el.innerHTML = htmlMaker;
+// }
 ```
 
 - Controle op Lege Data: De functie stopt als de blendShapes array leeg is om onnodige uitvoering te voorkomen.
