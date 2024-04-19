@@ -42,7 +42,6 @@ const canvasCtx = canvasElement.getContext("2d");
 // Check if webcam access is supported.
 const hasGetUserMedia = () => !!navigator.mediaDevices?.getUserMedia;
 
-
 // If webcam supported, add event listener to button for when user
 // wants to activate it.
 if (hasGetUserMedia()) {
@@ -80,11 +79,13 @@ let lastVideoTime = -1;
 const drawingUtils = new DrawingUtils(canvasCtx);
 
 async function predictWebcam() {
+  // Calculate the aspect ratio of the video to the canvas and if it's not the same, make it the same.
   if (video.videoWidth !== canvasElement.width || video.videoHeight !== canvasElement.height) {
     canvasElement.width = video.videoWidth;
     canvasElement.height = video.videoHeight;
   }
 
+  // Get the current time of the video in milliseconds
   let startTimeMs = performance.now();
   if (lastVideoTime !== video.currentTime) {
     lastVideoTime = video.currentTime;

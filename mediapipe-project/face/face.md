@@ -7,6 +7,15 @@ MediaPipe Face Mesh schat in real-time 468 3D-gezichtslandmarken, zelfs op mobie
 
 ## Belangrijke Elementen in het HTML-document
 
+'<head>'
+- link:
+```html
+<script type="module" src="js/facetracking.js" defer></script>
+<link rel="stylesheet" href="style.css">
+```
+'</head>'
+
+'<body>'
 - Video element:
 ```html
 <video id="webcam" playsinline autoplay></video>
@@ -27,6 +36,7 @@ MediaPipe Face Mesh schat in real-time 468 3D-gezichtslandmarken, zelfs op mobie
   <ul class="blend-shapes-list" id="video-blend-shapes"></ul>
 </div>
 ```
+'</body>'
 
 ## Scripts (javascript)
 
@@ -87,9 +97,9 @@ const video = document.getElementById("webcam");
 const canvasElement = document.getElementById("output_canvas");
 const canvasCtx = canvasElement.getContext("2d");
 
-function hasGetUserMedia() {
-  return !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia);
-}
+// Check if webcam access is supported.
+const hasGetUserMedia = () => !!navigator.mediaDevices?.getUserMedia;
+
 
 if (hasGetUserMedia()) {
   enableWebcamButton = document.getElementById("webcamButton");
@@ -105,28 +115,26 @@ Dit deel van de code zorgt voor het instellen van de video- en canvas-elementen.
 ### Webcam Activeren en Landmarks Detecteren
 
 ```javascript
+// Enable the live webcam view and start detection.
 function enableCam(event) {
   if (!faceLandmarker) {
     console.log("Wait! faceLandmarker not loaded yet.");
     return;
   }
 
-  if (webcamRunning === true) {
-    webcamRunning = false;
-    enableWebcamButton.innerText = "ENABLE PREDICTIONS";
+  webcamRunning = !webcamRunning;
+  enableWebcamButton.innerText = webcamRunning ? "DISABLE PREDICTIONS" : "ENABLE PREDICTIONS";
+
+  if (webcamRunning) {
+    const constraints = { video: true };
+    navigator.mediaDevices.getUserMedia(constraints).then((stream) => {
+      video.srcObject = stream;
+      video.addEventListener("loadeddata", predictWebcam);
+    });
   } else {
-    webcamRunning = true;
-    enableWebcamButton.innerText = "DISABLE PREDICTIONS";
+    video.srcObject.getTracks().forEach(track => track.stop());
+    video.srcObject = null;
   }
-
-  const constraints = {
-    video: true
-  };
-
-  navigator.mediaDevices.getUserMedia(constraints).then((stream) => {
-    video.srcObject = stream;
-    video.addEventListener("loadeddata", predictWebcam);
-  });
 }
 ```
 
@@ -136,73 +144,88 @@ Wanneer de gebruiker de webcam inschakelt, wordt gecontroleerd of de FaceLandmar
 ### Voorspelling en Rendering
 
 ```javascript
+let lastVideoTime = -1;
+const drawingUtils = new DrawingUtils(canvasCtx);
+
 async function predictWebcam() {
-  // Calculate the aspect ratio of the video
-  const ratio = video.videoHeight / video.videoWidth;
-  video.style.width = "100%";
-  video.style.height = videoWidth * ratio + "px";
-  canvasElement.style.width = "100%";
-  canvasElement.style.height = videoWidth * ratio + "px";
-  canvasElement.width = video.videoWidth;
-  canvasElement.height = video.videoHeight;
+  // Calculate the aspect ratio of the video to the canvas and if it's not the same, make it the same.
+  if (video.videoWidth !== canvasElement.width || video.videoHeight !== canvasElement.height) {
+    canvasElement.width = video.videoWidth;
+    canvasElement.height = video.videoHeight;
+  }
 
   // Get the current time of the video in milliseconds
   let startTimeMs = performance.now();
   if (lastVideoTime !== video.currentTime) {
     lastVideoTime = video.currentTime;
-    // Detect face landmarks in the current frame
-    results = await faceLandmarker.detectForVideo(video, startTimeMs);
-  }
-
-  // Check if there are face landmarks in the results and draw them
-  if (results && results.faceLandmarks) {
-    // Clear the canvas and draw the current frame from the video
-    canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);
-    canvasCtx.drawImage(video, 0, 0, canvasElement.width, canvasElement.height);
+    let results = await faceLandmarker.detectForVideo(video, startTimeMs); // Asynchronously detect face landmarks
     
-    // Iterate through each detected face landmarks and draw them
-    results.faceLandmarks.forEach(landmarks => {
-      drawingUtils.drawConnectors(
-        canvasCtx, landmarks, FaceLandmarker.FACE_LANDMARKS_TESSELATION,
-        { color: "#C0C0C070", lineWidth: 1 }
-      );
-      drawingUtils.drawConnectors(
-        canvasCtx, landmarks, FaceLandmarker.FACE_LANDMARKS_RIGHT_EYE,
-        { color: "#FF3030" }
-      );
-      drawingUtils.drawConnectors(
-        canvasCtx, landmarks, FaceLandmarker.FACE_LANDMARKS_RIGHT_EYEBROW,
-        { color: "#FF3030" }
-      );
-      drawingUtils.drawConnectors(
-        canvasCtx, landmarks, FaceLandmarker.FACE_LANDMARKS_LEFT_EYE,
-        { color: "#30FF30" }
-      );
-      drawingUtils.drawConnectors(
-        canvasCtx, landmarks, FaceLandmarker.FACE_LANDMARKS_LEFT_EYEBROW,
-        { color: "#30FF30" }
-      );
-      drawingUtils.drawConnectors(
-        canvasCtx, landmarks, FaceLandmarker.FACE_LANDMARKS_FACE_OVAL,
-        { color: "#E0E0E0" }
-      );
-      drawingUtils.drawConnectors(
-        canvasCtx, landmarks, FaceLandmarker.FACE_LANDMARKS_LIPS,
-        { color: "#E0E0E0" }
-      );
-      drawingUtils.drawConnectors(
-        canvasCtx, landmarks, FaceLandmarker.FACE_LANDMARKS_RIGHT_IRIS,
-        { color: "#FF3030" }
-      );
-      drawingUtils.drawConnectors(
-        canvasCtx, landmarks, FaceLandmarker.FACE_LANDMARKS_LEFT_IRIS,
-        { color: "#30FF30" }
-      );
-    });
+    canvasCtx.save();
+    // Clear the canvas for new drawing
+    canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);
+    
+    // Draw the video frame to the canvas
+    // canvasCtx.drawImage(video, 0, 0, canvasElement.width, canvasElement.height); // Draw the video frame to the canvas
+
+    if (results && results.faceLandmarks) {
+      
+
+      // Draw the face landmarks on the canvas expanded
+      for (const landmarks of results.faceLandmarks) {
+        drawingUtils.drawConnectors(
+          landmarks,
+          FaceLandmarker.FACE_LANDMARKS_TESSELATION,
+          { color: "#C0C0C070", lineWidth: 1 }
+        );
+        drawingUtils.drawConnectors(
+          landmarks,
+          FaceLandmarker.FACE_LANDMARKS_RIGHT_EYE,
+          { color: "#FF3030" }
+        );
+        drawingUtils.drawConnectors(
+          landmarks,
+          FaceLandmarker.FACE_LANDMARKS_RIGHT_EYEBROW,
+          { color: "#FF3030" }
+        );
+        drawingUtils.drawConnectors(
+          landmarks,
+          FaceLandmarker.FACE_LANDMARKS_LEFT_EYE,
+          { color: "#30FF30" }
+        );
+        drawingUtils.drawConnectors(
+          landmarks,
+          FaceLandmarker.FACE_LANDMARKS_LEFT_EYEBROW,
+          { color: "#30FF30" }
+        );
+        drawingUtils.drawConnectors(
+          landmarks,
+          FaceLandmarker.FACE_LANDMARKS_FACE_OVAL,
+          { color: "#E0E0E0" }
+        );
+        drawingUtils.drawConnectors(
+          landmarks,
+          FaceLandmarker.FACE_LANDMARKS_LIPS,
+          { color: "#E0E0E0" }
+        );
+        drawingUtils.drawConnectors(
+          landmarks,
+          FaceLandmarker.FACE_LANDMARKS_RIGHT_IRIS,
+          { color: "#FF3030" }
+        );
+        drawingUtils.drawConnectors(
+          landmarks,
+          FaceLandmarker.FACE_LANDMARKS_LEFT_IRIS,
+          { color: "#30FF30" }
+        );
+
+        // Efficiently draw detected landmarks (not expanded)
+        // drawingUtils.drawConnectors(landmarks, FaceLandmarker.FACE_LANDMARKS_TESSELATION, { color: "#C0C0C070", lineWidth: 1 });
+      }
+    }
   }
 
-  // Continue predicting by requesting another animation frame
-  if (webcamRunning === true) {
+  // Call this function again to keep predicting when the browser is ready
+  if (webcamRunning) {
     window.requestAnimationFrame(predictWebcam);
   }
 }
