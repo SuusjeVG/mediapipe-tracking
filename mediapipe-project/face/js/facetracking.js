@@ -150,6 +150,9 @@ async function predictWebcam() {
 
         // Efficiently draw detected landmarks (not expanded)
         // drawingUtils.drawConnectors(landmarks, FaceLandmarker.FACE_LANDMARKS_TESSELATION, { color: "#C0C0C070", lineWidth: 1 });
+        
+        //blendshapes (extra)
+        // drawingUtilsdrawBlendShapes(videoBlendShapes, results.faceBlendshapes);
       }
     }
   }
