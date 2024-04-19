@@ -7,15 +7,15 @@ MediaPipe Face Mesh schat in real-time 468 3D-gezichtslandmarken, zelfs op mobie
 
 ## Belangrijke Elementen in het HTML-document
 
-'<head>'
+`<head>`
 - link:
 ```html
 <script type="module" src="js/facetracking.js" defer></script>
 <link rel="stylesheet" href="style.css">
 ```
-'</head>'
+`</head>`
 
-'<body>'
+`<body>`
 - Video element:
 ```html
 <video id="webcam" playsinline autoplay></video>
@@ -36,7 +36,7 @@ MediaPipe Face Mesh schat in real-time 468 3D-gezichtslandmarken, zelfs op mobie
   <ul class="blend-shapes-list" id="video-blend-shapes"></ul>
 </div>
 ```
-'</body>'
+`</body>`
 
 ## Scripts (javascript)
 
