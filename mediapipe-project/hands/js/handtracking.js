@@ -1,6 +1,7 @@
 import {
   HandLandmarker,
-  FilesetResolver
+  FilesetResolver,
+  DrawingUtils
 } from "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.0";
 
 let handLandmarker = undefined;
@@ -53,65 +54,62 @@ function enableCam(event) {
     return;
   }
 
-  if (webcamRunning === true) {
-    webcamRunning = false;
-    enableWebcamButton.innerText = "ENABLE PREDICTIONS";
+  webcamRunning = !webcamRunning;
+  enableWebcamButton.innerText = webcamRunning ? "DISABLE PREDICTIONS" : "ENABLE PREDICTIONS";
+
+   // Activate or deactivate the webcam based on the current state
+  if (webcamRunning) {
+    // Activate the webcam stream.
+    navigator.mediaDevices.getUserMedia({ video: true }).then((stream) => {
+      video.srcObject = stream;
+      video.addEventListener("loadeddata", predictWebcam);
+    });
   } else {
-    webcamRunning = true;
-    enableWebcamButton.innerText = "DISABLE PREDICTIONS";
+    video.srcObject.getTracks().forEach(track => track.stop());
+    video.srcObject = null;
   }
 
-  // getUsermedia parameters.
-  const constraints = {
-    video: true
-  };
-
-  // Activate the webcam stream.
-  navigator.mediaDevices.getUserMedia(constraints).then((stream) => {
-    video.srcObject = stream;
-    video.addEventListener("loadeddata", predictWebcam);
-  });
 }
 
 
 let lastVideoTime = -1;
-let results = undefined;
-
+const drawingUtils = new DrawingUtils(canvasCtx);
+// Main function to predict hand landmarks
 async function predictWebcam() {
-  canvasElement.style.width = video.videoWidth;;
-  canvasElement.style.height = video.videoHeight;
-  canvasElement.width = video.videoWidth;
-  canvasElement.height = video.videoHeight;
-  
+
+  // Adjust canvas size only if it has changed
+  if (video.videoWidth !== canvasElement.width || video.videoHeight !== canvasElement.height) {
+    canvasElement.width = video.videoWidth;
+    canvasElement.height = video.videoHeight;
+  }
+
   // Start detection.
   let startTimeMs = performance.now();
+  // Process new frame only if the video time has changed
   if (lastVideoTime !== video.currentTime) {
+
     lastVideoTime = video.currentTime;
-    results = handLandmarker.detectForVideo(video, startTimeMs);
-  }
+    // Perform hand landmark detection asynchronously
+    let results = await handLandmarker.detectForVideo(video, startTimeMs);
 
-  // Render the results in the canvas.
-  canvasCtx.save();
-  canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);
-
-  // Draw the video frame to the canvas.
-  // canvasCtx.drawImage(video, 0, 0, canvasElement.width, canvasElement.height);
-
-  if (results.landmarks) {
-    for (const landmarks of results.landmarks) {
-      drawConnectors(canvasCtx, landmarks, HAND_CONNECTIONS, {
-        color: "#00FF00",
-        lineWidth: 5
-        
-      });
-      drawLandmarks(canvasCtx, landmarks, { color: "#FF0000", lineWidth: 2 });
-    }
+    canvasCtx.save();
+    // Clear the canvas for new drawing
+    canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);
     
-  }
-  canvasCtx.restore();
+    // Draw the video frame to the canvas
+    // canvasCtx.drawImage(video, 0, 0, canvasElement.width, canvasElement.height); // Draw the video frame to the canvas
 
-  // Call this function again to keep predicting when the browser is ready.
-  if (webcamRunning === true) {
+    // Draw results on the canvas
+    if (results && results.landmarks) {
+      for (const landmarks of results.landmarks) {
+        drawingUtils.drawConnectors(landmarks, HandLandmarker.HAND_CONNECTIONS, { color: "#00FF00", lineWidth: 5 });
+        drawingUtils.drawLandmarks(landmarks, { color: "#FF0000", lineWidth: 2 });
+      }
+    }
+  }
+
+  // Request the next animation frame to keep the loop going
+  if (webcamRunning) {
     window.requestAnimationFrame(predictWebcam);
   }
   

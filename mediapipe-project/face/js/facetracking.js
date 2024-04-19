@@ -40,9 +40,8 @@ const canvasElement = document.getElementById(
 const canvasCtx = canvasElement.getContext("2d");
 
 // Check if webcam access is supported.
-function hasGetUserMedia() {
-  return !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia);
-}
+const hasGetUserMedia = () => !!navigator.mediaDevices?.getUserMedia;
+
 
 // If webcam supported, add event listener to button for when user
 // wants to activate it.
@@ -62,103 +61,101 @@ function enableCam(event) {
     return;
   }
 
-  if (webcamRunning === true) {
-    webcamRunning = false;
-    enableWebcamButton.innerText = "ENABLE PREDICTIONS";
+  webcamRunning = !webcamRunning;
+  enableWebcamButton.innerText = webcamRunning ? "DISABLE PREDICTIONS" : "ENABLE PREDICTIONS";
+
+  if (webcamRunning) {
+    const constraints = { video: true };
+    navigator.mediaDevices.getUserMedia(constraints).then((stream) => {
+      video.srcObject = stream;
+      video.addEventListener("loadeddata", predictWebcam);
+    });
   } else {
-    webcamRunning = true;
-    enableWebcamButton.innerText = "DISABLE PREDICTIONS";
+    video.srcObject.getTracks().forEach(track => track.stop());
+    video.srcObject = null;
   }
-
-  // getUsermedia parameters.
-  const constraints = {
-    video: true
-  };
-
-  // Activate the webcam stream.
-  navigator.mediaDevices.getUserMedia(constraints).then((stream) => {
-    video.srcObject = stream;
-    video.addEventListener("loadeddata", predictWebcam);
-  });
 }
 
 let lastVideoTime = -1;
-let results = undefined;
 const drawingUtils = new DrawingUtils(canvasCtx);
-async function predictWebcam() {
-  const radio = video.videoHeight / video.videoWidth;
-  video.style.width = "100%";
-  video.style.height = videoWidth * radio + "px";
-  canvasElement.style.width = "100%";
-  canvasElement.style.height = videoWidth * radio + "px";
-  canvasElement.width = video.videoWidth;
-  canvasElement.height = video.videoHeight;
 
-  // Get the current time of the video in seconds.
+async function predictWebcam() {
+  if (video.videoWidth !== canvasElement.width || video.videoHeight !== canvasElement.height) {
+    canvasElement.width = video.videoWidth;
+    canvasElement.height = video.videoHeight;
+  }
+
   let startTimeMs = performance.now();
   if (lastVideoTime !== video.currentTime) {
     lastVideoTime = video.currentTime;
-    results = faceLandmarker.detectForVideo(video, startTimeMs);
-  }
+    let results = await faceLandmarker.detectForVideo(video, startTimeMs); // Asynchronously detect face landmarks
+    
+    canvasCtx.save();
+    // Clear the canvas for new drawing
+    canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);
+    
+    // Draw the video frame to the canvas
+    // canvasCtx.drawImage(video, 0, 0, canvasElement.width, canvasElement.height); // Draw the video frame to the canvas
 
-  // Draw the result landmarks in the canvas.
-  if (results.faceLandmarks) {
-
-    // Draw the video frame to the canvas.
-     canvasCtx.drawImage(video, 0, 0, canvasElement.width, canvasElement.height);
+    if (results && results.faceLandmarks) {
       
-    for (const landmarks of results.faceLandmarks) {
-      drawingUtils.drawConnectors(
-        landmarks,
-        FaceLandmarker.FACE_LANDMARKS_TESSELATION,
-        { color: "#C0C0C070", lineWidth: 1 }
-      );
-      drawingUtils.drawConnectors(
-        landmarks,
-        FaceLandmarker.FACE_LANDMARKS_RIGHT_EYE,
-        { color: "#FF3030" }
-      );
-      drawingUtils.drawConnectors(
-        landmarks,
-        FaceLandmarker.FACE_LANDMARKS_RIGHT_EYEBROW,
-        { color: "#FF3030" }
-      );
-      drawingUtils.drawConnectors(
-        landmarks,
-        FaceLandmarker.FACE_LANDMARKS_LEFT_EYE,
-        { color: "#30FF30" }
-      );
-      drawingUtils.drawConnectors(
-        landmarks,
-        FaceLandmarker.FACE_LANDMARKS_LEFT_EYEBROW,
-        { color: "#30FF30" }
-      );
-      drawingUtils.drawConnectors(
-        landmarks,
-        FaceLandmarker.FACE_LANDMARKS_FACE_OVAL,
-        { color: "#E0E0E0" }
-      );
-      drawingUtils.drawConnectors(
-        landmarks,
-        FaceLandmarker.FACE_LANDMARKS_LIPS,
-        { color: "#E0E0E0" }
-      );
-      drawingUtils.drawConnectors(
-        landmarks,
-        FaceLandmarker.FACE_LANDMARKS_RIGHT_IRIS,
-        { color: "#FF3030" }
-      );
-      drawingUtils.drawConnectors(
-        landmarks,
-        FaceLandmarker.FACE_LANDMARKS_LEFT_IRIS,
-        { color: "#30FF30" }
-      );
+
+      // Draw the face landmarks on the canvas expanded
+      for (const landmarks of results.faceLandmarks) {
+        drawingUtils.drawConnectors(
+          landmarks,
+          FaceLandmarker.FACE_LANDMARKS_TESSELATION,
+          { color: "#C0C0C070", lineWidth: 1 }
+        );
+        drawingUtils.drawConnectors(
+          landmarks,
+          FaceLandmarker.FACE_LANDMARKS_RIGHT_EYE,
+          { color: "#FF3030" }
+        );
+        drawingUtils.drawConnectors(
+          landmarks,
+          FaceLandmarker.FACE_LANDMARKS_RIGHT_EYEBROW,
+          { color: "#FF3030" }
+        );
+        drawingUtils.drawConnectors(
+          landmarks,
+          FaceLandmarker.FACE_LANDMARKS_LEFT_EYE,
+          { color: "#30FF30" }
+        );
+        drawingUtils.drawConnectors(
+          landmarks,
+          FaceLandmarker.FACE_LANDMARKS_LEFT_EYEBROW,
+          { color: "#30FF30" }
+        );
+        drawingUtils.drawConnectors(
+          landmarks,
+          FaceLandmarker.FACE_LANDMARKS_FACE_OVAL,
+          { color: "#E0E0E0" }
+        );
+        drawingUtils.drawConnectors(
+          landmarks,
+          FaceLandmarker.FACE_LANDMARKS_LIPS,
+          { color: "#E0E0E0" }
+        );
+        drawingUtils.drawConnectors(
+          landmarks,
+          FaceLandmarker.FACE_LANDMARKS_RIGHT_IRIS,
+          { color: "#FF3030" }
+        );
+        drawingUtils.drawConnectors(
+          landmarks,
+          FaceLandmarker.FACE_LANDMARKS_LEFT_IRIS,
+          { color: "#30FF30" }
+        );
+
+        // Efficiently draw detected landmarks (not expanded)
+        // drawingUtils.drawConnectors(landmarks, FaceLandmarker.FACE_LANDMARKS_TESSELATION, { color: "#C0C0C070", lineWidth: 1 });
+      }
     }
   }
-  drawBlendShapes(videoBlendShapes, results.faceBlendshapes);
 
-  // Call this function again to keep predicting when the browser is ready.
-  if (webcamRunning === true) {
+  // Call this function again to keep predicting when the browser is ready
+  if (webcamRunning) {
     window.requestAnimationFrame(predictWebcam);
   }
 }

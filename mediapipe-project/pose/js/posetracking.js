@@ -56,55 +56,56 @@ function enableCam(event) {
     return;
   }
 
-  if (webcamRunning === true) {
-    webcamRunning = false;
-    enableWebcamButton.innerText = "ENABLE PREDICTIONS";
+  webcamRunning = !webcamRunning;
+  enableWebcamButton.innerText = webcamRunning ? "DISABLE PREDICTIONS" : "ENABLE PREDICTIONS";
+
+  // Activate or deactivate the webcam based on the current state
+  if (webcamRunning) {
+    // Activate the webcam stream.
+    navigator.mediaDevices.getUserMedia({ video: true }).then((stream) => {
+      video.srcObject = stream;
+      video.addEventListener("loadeddata", predictWebcam);
+    });
   } else {
-    webcamRunning = true;
-    enableWebcamButton.innerText = "DISABLE PREDICTIONS";
+    video.srcObject.getTracks().forEach(track => track.stop());
+    video.srcObject = null;
   }
-
-  // getUsermedia parameters.
-  const constraints = {
-    video: true
-  };
-
-  // Activate the webcam stream.
-  navigator.mediaDevices.getUserMedia(constraints).then((stream) => {
-    video.srcObject = stream;
-    video.addEventListener("loadeddata", predictWebcam);
-  });
 }
 
 let lastVideoTime = -1;
 async function predictWebcam() {
 
   // Get the current time of the video in seconds.
-  let startTimeMs = performance.now();
+  // Process new frame only if the video time has changed
   if (lastVideoTime !== video.currentTime) {
     lastVideoTime = video.currentTime;
+    let startTimeMs = performance.now();
 
-    poseLandmarker.detectForVideo(video, startTimeMs, (result) => {
-      canvasCtx.save();
-      canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);
+    // Perform pose detection asynchronously
+    let results = await poseLandmarker.detectForVideo(video, startTimeMs);
 
-      // Draw the video frame to the canvas.
-      // canvasCtx.drawImage(video, 0, 0, canvasElement.width, canvasElement.height);
-      
+    canvasCtx.save();
+    // Clear the canvas for new drawing
+    canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);
 
-      for (const landmark of result.landmarks) {
+    // Draw the video frame to the canvas
+    // canvasCtx.drawImage(video, 0, 0, canvasElement.width, canvasElement.height); // Draw the video frame to the canvas
+
+    // Draw the detected pose landmarks and connectors on the canvas
+    if (results && results.landmarks) {
+      for (const landmark of results.landmarks) {
         drawingUtils.drawLandmarks(landmark, {
           radius: (data) => DrawingUtils.lerp(data.from.z, -0.15, 0.1, 5, 1)
         });
         drawingUtils.drawConnectors(landmark, PoseLandmarker.POSE_CONNECTIONS);
       }
+    }
 
-      canvasCtx.restore();
-    });
+    canvasCtx.restore();
   }
 
-  // Call this function again to keep predicting when the browser is ready.
-  if (webcamRunning === true) {
+  // Request the next animation frame to keep the loop going
+  if (webcamRunning) {
     window.requestAnimationFrame(predictWebcam);
   }
 }
