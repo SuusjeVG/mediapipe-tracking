@@ -35,7 +35,6 @@ const canvasElement = document.getElementById(
   "output_canvas"
 );
 const canvasCtx = canvasElement.getContext("2d");
-const drawingUtils = new DrawingUtils(canvasCtx);
 
 // Check if webcam access is supported.
 const hasGetUserMedia = () => !!navigator.mediaDevices?.getUserMedia;
@@ -73,6 +72,8 @@ function enableCam(event) {
 }
 
 let lastVideoTime = -1;
+const drawingUtils = new DrawingUtils(canvasCtx);
+
 async function predictWebcam() {
 
   // Get the current time of the video in seconds.
